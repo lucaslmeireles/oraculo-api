@@ -11,7 +11,10 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ModerationService } from 'src/moderation/moderation.service';
+import { UseGuards } from '@nestjs/common';
+import { WsJwtGuard } from 'src/auth/guard/ws.guard';
 
+@UseGuards(WsJwtGuard)
 @WebSocketGateway()
 export class SessionGateway implements OnGatewayDisconnect {
   @WebSocketServer() server!: Server;

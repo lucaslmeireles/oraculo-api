@@ -6,12 +6,23 @@ import { QueueModule } from './shared/queue/queue.module';
 import { WebSocketModule } from './websocket/websocket.module';
 import { ModerationModule } from './moderation/moderation.module';
 import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true, // Disponibiliza o ConfigService globalmente
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 60000,
+          limit: 10,
+        },
+      ],
     }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    AuthModule,
     MatchmakingModule,
     SessionsModule,
     PrismaModule,
