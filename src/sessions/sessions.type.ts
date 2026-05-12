@@ -2,28 +2,28 @@ import { IsString, IsNotEmpty, IsDate } from 'class-validator';
 export class CreateSessionDto {
   @IsString()
   @IsNotEmpty()
-  roomId: string;
+  roomId!: string;
 
   @IsString()
   @IsNotEmpty()
-  seekerId: string;
+  seekerId!: string;
 
   @IsString()
   @IsNotEmpty()
-  oracleId: string;
+  oracleId!: string;
 }
 
 export class UpdateOracleDto {
   @IsString()
   @IsNotEmpty()
-  oracleId: string;
+  oracleId!: string;
 
   @IsDate()
-  matchedAt: Date;
+  matchedAt!: Date;
 }
 
 export class CloseSessionDto {
   @IsString()
   @IsNotEmpty()
-  roomId: string;
+  roomId!: string;
 }

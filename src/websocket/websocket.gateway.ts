@@ -23,13 +23,16 @@ export class SessionGateway implements OnGatewayDisconnect {
 
   @SubscribeMessage(SocketEvent.JOIN_AS_SEEKER)
   async handleJoinSeeker(@ConnectedSocket() client: Socket) {
+    console.log('seeker connected:', client.id);
     await this.match.addSeeker(client.id);
     client.emit(SocketEvent.WAITING_ORACLE);
   }
 
   @SubscribeMessage(SocketEvent.JOIN_AS_ORACLE)
   async handleJoinOracle(@ConnectedSocket() oracle: Socket) {
+    console.log('oracle connected:', oracle.id);
     const seekerId = await this.match.popSeeker();
+    console.log('seeker found:', seekerId);
     if (!seekerId) {
       oracle.emit(SocketEvent.WAITING_SEEKER);
       return;
@@ -41,8 +44,9 @@ export class SessionGateway implements OnGatewayDisconnect {
       oracleId: oracle.id,
     });
     await oracle.join(roomId);
-    await this.server.sockets.sockets.get(seekerId)?.join(roomId);
-    this.server.to(roomId).emit(SocketEvent.MATCH_FOUND);
+    const seekerSocket = this.server.sockets.sockets.get(seekerId);
+    await seekerSocket?.join(roomId);
+    this.server.to(roomId).emit(SocketEvent.MATCH_FOUND, { roomId });
   }
 
   @SubscribeMessage(SocketEvent.QUESTION_SEND)
@@ -56,8 +60,9 @@ export class SessionGateway implements OnGatewayDisconnect {
       await this.session.close(session.roomId);
       this.server.to(session.roomId).emit(SocketEvent.SESSION_CLOSED);
       this.server.to(session.roomId).disconnectSockets();
+      return;
     }
-    // oracleId sempre vai ter algum valor nesse ponto do código, a session só vai ser criada com ele
+    // oracleId will always be defined here since session is active
     this.server.to(session.oracleId!).emit(SocketEvent.QUESTION_RECEIVED);
   }
 
@@ -69,7 +74,7 @@ export class SessionGateway implements OnGatewayDisconnect {
     if (!approved) return;
     this.server
       .to(session.roomId)
-      .emit(SocketEvent.QUESTION_RECEIVED, { content: data.content });
+      .emit(SocketEvent.ANSWER_RECEIVED, { content: data.content });
     await this.session.close(session.roomId);
     this.server.to(session.roomId).emit(SocketEvent.SESSION_CLOSED);
     this.server.to(session.roomId).disconnectSockets();

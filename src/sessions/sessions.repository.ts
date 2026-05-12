@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { SessionCreateInput } from 'generated/prisma/models';
-import { PrismaService } from 'src/shared/prisma/prisma.service';
+import { PrismaService } from '../shared/prisma/prisma.service';
 import { UpdateOracleDto } from './sessions.type';
-import { SessionStatus } from 'generated/prisma/enums';
-
+import { SessionStatus } from '../../generated/prisma/enums';
+import { SessionCreateInput } from '../../generated/prisma/models';
 @Injectable()
 export class SessionsRepository {
   constructor(private prisma: PrismaService) {}

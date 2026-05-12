@@ -1,13 +1,18 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 
 @Injectable()
 export class ModerationService {
   private client: OpenAI;
 
-  constructor() {
+  constructor(private configService: ConfigService) {
+    const apiKey = this.configService.get<string>('GROQ_API_KEY');
+    if (!apiKey) {
+      throw new Error('GROQ_API_KEY environment variable is not set');
+    }
     this.client = new OpenAI({
-      apiKey: process.env.GROQ_API_KEY,
+      apiKey,
       baseURL: 'https://api.groq.com/openai/v1',
     });
   }

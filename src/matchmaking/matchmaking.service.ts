@@ -9,7 +9,7 @@ export class MatchmakingService {
   async addSeeker(socketId: string) {
     await this.queue.add(
       'seeker',
-      { socketId },
+      { socketId: socketId },
       {
         jobId: socketId,
       },
@@ -21,7 +21,7 @@ export class MatchmakingService {
     if (!jobs.length) return null;
     const job = jobs[0];
     await job.remove();
-    return job.data.socketId;
+    return job.data.socketId as string | null;
   }
 
   async removeSeeker(seekerId: string) {

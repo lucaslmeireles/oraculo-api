@@ -4,8 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { SessionsRepository } from './sessions.repository';
-import { SessionStatus } from 'generated/prisma/enums';
 import { CreateSessionDto } from './sessions.type';
+import { SessionStatus } from '../../generated/prisma/enums';
 
 @Injectable()
 export class SessionsService {
@@ -17,17 +17,17 @@ export class SessionsService {
 
   async findByRoom(roomId: string) {
     const session = await this.sessionRepository.findByRoom(roomId);
-    if (!session) throw new NotFoundException('Sessão não encontrada');
+    if (!session) throw new NotFoundException('Session not found');
     return session;
   }
 
   async setOracle(roomId: string, oracleId: string) {
     const session = await this.sessionRepository.findByRoom(roomId);
 
-    if (!session) throw new NotFoundException('Sessão não encontrada');
+    if (!session) throw new NotFoundException('Session not found');
 
     if (session.status !== SessionStatus.WAITING) {
-      throw new BadRequestException('Sessão não está aguardando um oráculo');
+      throw new BadRequestException('Session is not waiting for oracle');
     }
 
     return this.sessionRepository.setOracle(roomId, {
@@ -39,10 +39,10 @@ export class SessionsService {
   async close(roomId: string) {
     const session = await this.sessionRepository.findByRoom(roomId);
 
-    if (!session) throw new NotFoundException('Sessão não encontrada');
+    if (!session) throw new NotFoundException('Session not found');
 
     if (session.status === SessionStatus.CLOSED) {
-      throw new BadRequestException('Sessão já encerrada');
+      throw new BadRequestException('Session is closed');
     }
 
     return this.sessionRepository.close(roomId);

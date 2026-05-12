@@ -7,5 +7,6 @@ export enum SocketEvent {
   QUESTION_SEND = 'question:send',
   QUESTION_RECEIVED = 'question:received',
   ANSWER_SEND = 'answer:send',
+  ANSWER_RECEIVED = 'answer:received',
   SESSION_CLOSED = 'session:closed',
 }
